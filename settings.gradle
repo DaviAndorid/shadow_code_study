@@ -1,0 +1,4 @@
+include ':sample-manager'
+include ':dynamic-host'
+include ':app'
+rootProject.name = "DemoHot"
