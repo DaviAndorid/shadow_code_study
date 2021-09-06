@@ -1,0 +1,2 @@
+# shadow_pluginmanager
+安卓热修shadow框架之pluginmanager设计～
