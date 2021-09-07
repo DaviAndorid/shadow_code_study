@@ -1,3 +1,6 @@
+include ':manager'
+include ':dynamic-manager'
+include ':constant'
 include ':sample-manager'
 include ':dynamic-host'
 include ':app'

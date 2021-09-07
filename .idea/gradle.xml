@@ -11,7 +11,10 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/constant" />
             <option value="$PROJECT_DIR$/dynamic-host" />
+            <option value="$PROJECT_DIR$/dynamic-manager" />
+            <option value="$PROJECT_DIR$/manager" />
             <option value="$PROJECT_DIR$/sample-manager" />
           </set>
         </option>
