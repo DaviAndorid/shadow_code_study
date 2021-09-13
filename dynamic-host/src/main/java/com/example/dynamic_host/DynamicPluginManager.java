@@ -59,9 +59,6 @@ public final class DynamicPluginManager implements PluginManager {
 
         if (!TextUtils.equals(mCurrentImplMd5, md5)) {
             //文件更新了
-
-            // java.lang.Exception: java.lang.ClassNotFoundException:
-            // - com.example.sample_manager.ManagerFactoryImpl
             ManagerImplLoader implLoader = new ManagerImplLoader(context, latestManagerImplApk);
             PluginManagerImpl newImpl = implLoader.load();
             Bundle state;
