@@ -1,15 +1,23 @@
 
 package com.example.dynamic_manager;
 
+import static com.example.dynamic_host.FailedException.ERROR_CODE_FILE_NOT_FOUND_EXCEPTION;
+
 import android.content.ComponentName;
 import android.content.Context;
-import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.example.dynamic_host.DynamicRuntime;
 import com.example.dynamic_host.FailedException;
+import com.example.dynamic_host.LoaderImplLoader;
+import com.example.dynamic_host.PluginLoaderImpl;
 import com.example.dynamic_host.PluginManagerImpl;
+import com.example.dynamic_host.common.InstalledApk;
+import com.example.dynamic_loader.PluginLoader;
+
+import java.io.File;
 
 
 /**
@@ -28,6 +36,8 @@ public abstract class PluginManagerThatUseDynamicLoader
         extends BaseDynamicPluginManager implements PluginManagerImpl {
 
 
+    protected PluginLoaderImpl mPluginLoader;
+
     protected PluginManagerThatUseDynamicLoader(Context context) {
         super(context);
     }
@@ -41,13 +51,35 @@ public abstract class PluginManagerThatUseDynamicLoader
     protected void onPluginServiceDisconnected(ComponentName name) {
     }
 
-    @Deprecated
-    public final void loadRunTime(String uuid) throws RemoteException, FailedException {
-
+    /***
+     * 1）加载runtime apk
+     * 2）知识回顾：http://gityuan.com/2017/03/19/android-classloader/
+     * 3）
+     * */
+    public final void loadRunTime(String uuid) {
+        InstalledApk installedApk;
+        // 原著那边是通过服务方式实现，这里为了简化所以选择直接调用
+        installedApk = getRuntime(uuid);
+        InstalledApk installedRuntimeApk = new InstalledApk(installedApk.apkFilePath, installedApk.oDexPath, installedApk.libraryPath);
+        boolean loaded = DynamicRuntime.loadRuntime(installedRuntimeApk);
+        if (loaded) {
+            DynamicRuntime.saveLastRuntimeInfo(mHostContext, installedRuntimeApk);
+        }
     }
 
-    @Deprecated
-    public final void loadPluginLoader(String uuid) throws RemoteException, FailedException {
-
+    /**
+     *
+     */
+    public final void loadPluginLoader(String uuid) {
+        InstalledApk installedApk;
+        installedApk = getPluginLoader(uuid);
+        File file = new File(installedApk.apkFilePath);
+        if (!file.exists()) {
+            Log.e(TAG, file.getAbsolutePath() + ", 文件不存在");
+        }
+        LoaderImplLoader implLoader = new LoaderImplLoader();
+        mPluginLoader = implLoader.load(installedApk, uuid, mHostContext);
     }
+
+
 }

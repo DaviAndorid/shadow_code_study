@@ -5,3 +5,5 @@ include ':sample-manager'
 include ':dynamic-host'
 include ':app'
 rootProject.name = "DemoHot"
+include ':utils'
+include ':dynamic-loader'

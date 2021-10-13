@@ -2,11 +2,13 @@
 package com.example.sample_manager.sample;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
 import com.example.constant.Constant;
 import com.example.dynamic_host.EnterCallback;
+import com.example.manager.InstalledPlugin;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,7 +17,7 @@ import java.util.concurrent.Executors;
  * Manager的功能就是管理插件
  * 1）插件的下载逻辑
  * 2）入口逻辑
- * 3） 预加载逻辑等
+ * 3）预加载逻辑等
  * 4）一切还没有进入到Loader之前的所有事情
  * */
 public class SamplePluginManager extends FastPluginManager {
@@ -82,13 +84,36 @@ public class SamplePluginManager extends FastPluginManager {
     }
 
     private void onStartActivity(final Context context, Bundle bundle, final EnterCallback callback) {
-        //1）加载插件
-        executorService.execute(() -> {
+        //0）参数准备
+        final String pluginZipPath = bundle.getString(Constant.KEY_PLUGIN_ZIP_PATH);
+        final String partKey = bundle.getString(Constant.KEY_PLUGIN_PART_KEY);
+        final String className = bundle.getString(Constant.KEY_ACTIVITY_CLASSNAME);
+        final Bundle extras = bundle.getBundle(Constant.KEY_EXTRAS);
+        Log.i(TAG, "SamplePluginManager, onStartActivity，pluginZipPath = " + pluginZipPath);
+        Log.i(TAG, "SamplePluginManager, onStartActivity，partKey = " + partKey);
+        Log.i(TAG, "SamplePluginManager, onStartActivity，className = " + className);
 
+        executorService.execute(() -> {
+            try {
+                //1）插件的优化等，然后返回插件列表的第一个（默认）
+                InstalledPlugin installedPlugin = installPlugin(pluginZipPath, null, true);
+
+                //2）intent的包装
+                Intent pluginIntent = new Intent();
+                pluginIntent.setClassName(context.getPackageName(), className);
+                if (extras != null) {
+                    pluginIntent.replaceExtras(extras);
+                }
+
+                //3）加载框架插件（如：loader/runtime）和业务插件，同时启动插件activity
+                startPluginActivity(installedPlugin, partKey, pluginIntent);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "SamplePluginManager, 插件启动，这个环节先不展开，下个阶段展开");
+            }
         });
 
-
-        //2）插件启动 todo 这个环节先不展开，下个阶段展开
-        Log.e(TAG, "SamplePluginManager, 插件启动，这个环节先不展开，下个阶段展开");
     }
+
+
 }

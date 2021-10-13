@@ -31,4 +31,5 @@ dependencies {
 
     implementation project(':manager')
     compileOnly project(':dynamic-host')
+    implementation project(':dynamic-loader')
 }

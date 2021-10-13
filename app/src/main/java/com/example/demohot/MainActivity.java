@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.example.constant.Constant;
 import com.example.demohot.manager.Shadow;
 import com.example.dynamic_host.PluginManager;
 
@@ -44,7 +45,20 @@ public class MainActivity extends AppCompatActivity {
             //只是构建了 PluginManager 的实现，并没有实质调用
             loadPluginManager(PluginHelper.getInstance().pluginManagerFile);
 
-            Bundle bundle = new Bundle(); //todo bundle 传递信息
+            /**
+             * 参数准备
+             * */
+            Bundle bundle = new Bundle();
+            //插件zip包的路径，具体zip里面有什么见：https://juejin.cn/post/7008060973038698503#heading-1
+            bundle.putString(Constant.KEY_PLUGIN_ZIP_PATH, PluginHelper.getInstance().pluginManagerFile.getAbsolutePath());
+            //要启动的插件标示 partKey
+            bundle.putString(Constant.KEY_PLUGIN_PART_KEY, Constant.PART_KEY_PLUGIN_MAIN_APP);
+            //todo 要启动插件的activity
+            bundle.putString(Constant.KEY_ACTIVITY_CLASSNAME, "要启动插件的activity");
+
+            /**
+             * 进入插件
+             * */
             mPluginManager.enter(this, FROM_ID_START_ACTIVITY, bundle, null);
         });
     }

@@ -10,6 +10,7 @@ import android.util.Log;
 import com.example.dynamic_host.FailedException;
 import com.example.dynamic_manager.PluginManagerThatUseDynamicLoader;
 import com.example.manager.InstalledPlugin;
+import com.example.manager.InstalledType;
 import com.example.manager.PluginConfig;
 
 import org.json.JSONException;
@@ -107,7 +108,67 @@ public abstract class FastPluginManager extends PluginManagerThatUseDynamicLoade
     public InstalledPlugin installPlugin(String zip, String hash, boolean odex)
             throws IOException, JSONException, InterruptedException, ExecutionException {
 
-        return new InstalledPlugin();
+        //1）zip 转换为 PluginConfig 配置
+        final PluginConfig pluginConfig = installPluginFromZip(new File(zip), hash);
+
+        final String uuid = pluginConfig.UUID;
+        List<Future> futures = new LinkedList<>();
+
+        //2）插件runTime/pluginLoader 的 odex 优化
+        if (pluginConfig.runTime != null && pluginConfig.pluginLoader != null) {
+            //runTime
+            Future odexRuntime = mFixedPool.submit((Callable) () -> {
+                oDexPluginLoaderOrRunTime(uuid, InstalledType.TYPE_PLUGIN_RUNTIME, pluginConfig.runTime.file);
+                return null;
+            });
+            futures.add(odexRuntime);
+
+            //pluginLoader
+            Future odexLoader = mFixedPool.submit((Callable) () -> {
+                oDexPluginLoaderOrRunTime(uuid, InstalledType.TYPE_PLUGIN_LOADER, pluginConfig.pluginLoader.file);
+                return null;
+            });
+            futures.add(odexLoader);
+        }
+
+        //3）业务插件的so解压/odex优化等
+        for (Map.Entry<String, PluginConfig.PluginFileInfo> plugin : pluginConfig.plugins.entrySet()) {
+            final String partKey = plugin.getKey();
+            final File apkFile = plugin.getValue().file;
+
+            //业务插件，插件apk的so解压
+            Future extractSo = mFixedPool.submit((Callable) () -> {
+                //插件apk的so解压
+                extractSo(uuid, partKey, apkFile);
+                return null;
+            });
+            futures.add(extractSo);
+
+            //业务插件，odex优化
+            if (odex) {
+                Future odexPlugin = mFixedPool.submit((Callable) () -> {
+                    oDexPlugin(uuid, partKey, apkFile);
+                    return null;
+                });
+                futures.add(odexPlugin);
+            }
+        }
+
+        //4）任务执行
+        for (Future future : futures) {
+            /**
+             * get（）方法可以：
+             * 1）当任务结束后返回一个结果值，
+             * 2）如果工作没有结束，则会阻塞当前线程，直到任务执行完毕
+             * */
+            future.get();
+        }
+
+        //5）执行完毕，将插件信息持久化到数据库(如：soDir/oDexDir等)
+        onInstallCompleted(pluginConfig);
+
+        //6）获取已安装的插件，最后安装的排在返回List的最前面
+        return getInstalledPlugins(1).get(0);
     }
 
 
@@ -115,21 +176,27 @@ public abstract class FastPluginManager extends PluginManagerThatUseDynamicLoade
      * 启动插件的activity
      * 1）"com.tencent.shadow.sample.plugin.runtime.PluginDefaultProxyActivity"      【run-time模块】
      * */
-    public void startPluginActivity(InstalledPlugin installedPlugin, String partKey, Intent pluginIntent)
-            throws RemoteException, TimeoutException, FailedException {
+    public void startPluginActivity(InstalledPlugin installedPlugin, String partKey, Intent pluginIntent) {
+        //1）intent 的包装
+        Intent intent = convertActivityIntent(installedPlugin, partKey, pluginIntent);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        //2）启动
+
+        mPluginLoader.startActivityInPluginProcess(intent);
     }
 
-    public Intent convertActivityIntent(InstalledPlugin installedPlugin, String partKey, Intent pluginIntent)
-            throws RemoteException, TimeoutException, FailedException {
+    public Intent convertActivityIntent(InstalledPlugin installedPlugin, String partKey, Intent pluginIntent) {
 
-        return new Intent();
-        //return mPluginLoader.convertActivityIntent(pluginIntent);
+        //1）加载框架插件（如：loader/runtime）和业务插件
+        loadPlugin(installedPlugin.UUID, partKey);
+
+        //2）包装插件的intent等
+        return mPluginLoader.convertActivityIntent(pluginIntent);
     }
 
-    private void loadPluginLoaderAndRuntime(String uuid, String partKey) throws RemoteException, TimeoutException, FailedException {
+    private void loadPluginLoaderAndRuntime(String uuid, String partKey) {
         /***
-         * 1）具体实现在：PluginProcessService（跨进程通讯）
-         *
          * sample-runtime-release.apk
          * */
         loadRunTime(uuid);
@@ -139,8 +206,12 @@ public abstract class FastPluginManager extends PluginManagerThatUseDynamicLoade
         loadPluginLoader(uuid);
     }
 
-    private void loadPlugin(String uuid, String partKey) throws RemoteException, TimeoutException, FailedException {
+    private void loadPlugin(String uuid, String partKey) {
+        //1）加载 loader 和 runtime
+        loadPluginLoaderAndRuntime(uuid, partKey);
 
+        //2）通过loader，加载插件；例子：partKey = sample-plugin-app
+        mPluginLoader.loadPlugin(partKey);
     }
 
 

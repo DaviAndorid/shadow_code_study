@@ -166,30 +166,22 @@ abstract public class BaseDynamicPluginManager extends BasePluginManager impleme
     }
 
     public InstalledApk getPlugin(String uuid, String partKey) throws FailedException, NotFoundException {
-        return  new InstalledApk("", "", "");
+        return new InstalledApk("", "", "");
     }
 
-    private InstalledApk getInstalledPL(String uuid, int type) throws FailedException, NotFoundException {
-        try {
-            InstalledPlugin.Part part;
-            try {
-                part = getLoaderOrRunTimePart(uuid, type);
-            } catch (RuntimeException e) {
-                throw new NotFoundException("uuid==" + uuid + " type==" + type + "没找到。cause：" + e.getMessage());
-            }
-            return new InstalledApk(part.pluginFile.getAbsolutePath(),
-                    part.oDexDir == null ? null : part.oDexDir.getAbsolutePath(),
-                    part.libraryDir == null ? null : part.libraryDir.getAbsolutePath());
-        } catch (RuntimeException e) {
-            throw new FailedException(e);
-        }
+    private InstalledApk getInstalledPL(String uuid, int type) {
+        InstalledPlugin.Part part;
+        part = getLoaderOrRunTimePart(uuid, type);
+        return new InstalledApk(part.pluginFile.getAbsolutePath(),
+                part.oDexDir == null ? null : part.oDexDir.getAbsolutePath(),
+                part.libraryDir == null ? null : part.libraryDir.getAbsolutePath());
     }
 
-    public InstalledApk getPluginLoader(String uuid) throws FailedException, NotFoundException {
+    public InstalledApk getPluginLoader(String uuid){
         return getInstalledPL(uuid, InstalledType.TYPE_PLUGIN_LOADER);
     }
 
-    public InstalledApk getRuntime(String uuid) throws FailedException, NotFoundException {
+    public InstalledApk getRuntime(String uuid){
         return getInstalledPL(uuid, InstalledType.TYPE_PLUGIN_RUNTIME);
     }
 }

@@ -14,7 +14,7 @@ final class ManagerImplLoader extends ImplLoader {
 
     private static final String MANAGER_FACTORY_CLASS_NAME = "com.example.sample_manager.ManagerFactoryImpl";
     //1）背景：插件apk 和 宿主 都用了的
-    //2）实现方式：插件apk 编译的时候生效，但是生成apk的时候不打进去；在宿主运行加载插件的时候，对插件的classLoader
+    //2）实现方式：插件apk 编译的时候生效，但是生成apk的时候不ManagerFactory打进去；在宿主运行加载插件的时候，对插件的classLoader
     //定制话，实现插件用宿主的类
     private static final String[] REMOTE_PLUGIN_MANAGER_INTERFACES = new String[]
             {
@@ -61,7 +61,6 @@ final class ManagerImplLoader extends ImplLoader {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
     }
 
 

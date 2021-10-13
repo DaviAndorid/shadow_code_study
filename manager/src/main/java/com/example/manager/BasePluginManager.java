@@ -24,14 +24,6 @@ public abstract class BasePluginManager {
     public Context mHostContext;
 
     /**
-     * 从压缩包中将插件解压出来，解析成InstalledPlugin
-     */
-
-    /**
-     * 插件信息查询数据库接口
-     */
-
-    /**
      * UI线程的handler
      */
     protected Handler mUiHandler = new Handler(Looper.getMainLooper());
@@ -39,6 +31,7 @@ public abstract class BasePluginManager {
 
     public BasePluginManager(Context context) {
         this.mHostContext = context.getApplicationContext();
+        this.mInstalledDao = new InstalledDao(new InstalledPluginDBHelper(mHostContext, getName()));
     }
 
     /**
@@ -58,6 +51,11 @@ public abstract class BasePluginManager {
     }
 
     /**
+     * 从压缩包中将插件解压出来，解析成InstalledPlugin
+     */
+    private UnpackManager mUnpackManager;
+
+    /**
      * 从压缩包中解压插件
      *
      * @param zip  压缩包路径
@@ -66,7 +64,7 @@ public abstract class BasePluginManager {
      */
     public final PluginConfig installPluginFromZip(File zip, String hash) throws IOException, JSONException {
         Log.i(TAG, "BasePluginManager, installPluginFromZip，从压缩包中解压插件");
-        return new PluginConfig();
+        return mUnpackManager.unpackPlugin(hash, zip);
     }
 
     /**
@@ -76,9 +74,19 @@ public abstract class BasePluginManager {
      *
      * @param pluginConfig 插件配置信息
      */
-    @Deprecated
     public final void onInstallCompleted(PluginConfig pluginConfig) {
+        File root = mUnpackManager.getAppDir();
+        String soDir = AppCacheFolderManager.getLibDir(root, pluginConfig.UUID).getAbsolutePath();
+        String oDexDir = AppCacheFolderManager.getODexDir(root, pluginConfig.UUID).getAbsolutePath();
+
+        mInstalledDao.insert(pluginConfig, soDir, oDexDir);
     }
+    /**
+     * 插件信息查询数据库接口
+     */
+    private InstalledDao mInstalledDao;
+
+
 
     protected InstalledPlugin.Part getPluginPartByPartKey(String uuid, String partKey) {
         return new InstalledPlugin.Part(0, new File(""), new File(""), new File(""));
@@ -98,9 +106,14 @@ public abstract class BasePluginManager {
      * @param uuid    插件包的uuid
      * @param partKey 要oDex的插件partkey
      */
-    @Deprecated
-    public final void oDexPlugin(String uuid, String partKey, File apkFile) {
-
+    public final void oDexPlugin(String uuid, String partKey, File apkFile) throws InstallPluginException {
+        try {
+            File root = mUnpackManager.getAppDir();
+            File oDexDir = AppCacheFolderManager.getODexDir(root, uuid);
+            ODexBloc.oDexPlugin(apkFile, oDexDir, AppCacheFolderManager.getODexCopiedFile(oDexDir, partKey));
+        } catch (InstallPluginException e) {
+            throw e;
+        }
     }
 
 
@@ -130,7 +143,15 @@ public abstract class BasePluginManager {
      * @param type    要oDex的插件类型 @class IntalledType  loader or runtime
      * @param apkFile 插件apk文件
      */
-    public final void oDexPluginLoaderOrRunTime(String uuid, int type, File apkFile) {
+    public final void oDexPluginLoaderOrRunTime(String uuid, int type, File apkFile) throws InstallPluginException {
+        try {
+            File root = mUnpackManager.getAppDir();
+            File oDexDir = AppCacheFolderManager.getODexDir(root, uuid);
+            String key = type == InstalledType.TYPE_PLUGIN_LOADER ? "loader" : "runtime";
+            ODexBloc.oDexPlugin(apkFile, oDexDir, AppCacheFolderManager.getODexCopiedFile(oDexDir, key));
+        } catch (InstallPluginException e) {
+            throw e;
+        }
     }
 
 
@@ -141,9 +162,16 @@ public abstract class BasePluginManager {
      * @param partKey 要解压so的插件partkey
      * @param apkFile 插件apk文件
      */
-    @Deprecated
-    public final void extractSo(String uuid, String partKey, File apkFile) {
-
+    public final void extractSo(String uuid, String partKey, File apkFile) throws InstallPluginException {
+        try {
+            File root = mUnpackManager.getAppDir();
+            String filter = "lib/" + getAbi() + "/";
+            File soDir = AppCacheFolderManager.getLibDir(root, uuid);
+            CopySoBloc.copySo(apkFile, soDir
+                    , AppCacheFolderManager.getLibCopiedFile(soDir, partKey), filter);
+        } catch (InstallPluginException e) {
+            throw e;
+        }
     }
 
     /**
@@ -163,9 +191,8 @@ public abstract class BasePluginManager {
      *
      * @param limit 最多获取个数
      */
-    @Deprecated
     public final List<InstalledPlugin> getInstalledPlugins(int limit) {
-        return new ArrayList<>();
+        return mInstalledDao.getLastPlugins(limit);
     }
 
 

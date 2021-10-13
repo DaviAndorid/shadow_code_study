@@ -13,7 +13,6 @@ import java.util.Map;
  * 这是一个Serializable类，目的是可以将这个类的对象放在Intent中跨进程传递。
  * 注意：equals()方法必须重载，并包含全部域变量。
  *
- * @author owenguo
  */
 public class InstalledPlugin implements Serializable {
 

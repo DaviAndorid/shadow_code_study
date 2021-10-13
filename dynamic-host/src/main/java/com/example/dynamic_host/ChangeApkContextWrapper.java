@@ -26,7 +26,6 @@ class ChangeApkContextWrapper extends ContextWrapper {
 
     final private ClassLoader mClassloader;
 
-    @Deprecated
     ChangeApkContextWrapper(Context base, String apkPath, ClassLoader mClassloader) {
         super(base);
         this.mClassloader = mClassloader;
@@ -48,8 +47,6 @@ class ChangeApkContextWrapper extends ContextWrapper {
     //其实也可以用另外一种方式：AssetManager 直接指定目录，如：addPath模式【这样做是不希望hook吧】
     //AssetManager比getResourcesForApplication要灵活很多，使用场景也更广。
     private Resources createResources(String apkPath, Context base) {
-        Log.i(TAG, "ChangeApkContextWrapper, ---createResources start----");
-
         PackageManager packageManager = base.getPackageManager();
         //获取安装包信息
         //但是，这些包都是没有在PMS中注册的
