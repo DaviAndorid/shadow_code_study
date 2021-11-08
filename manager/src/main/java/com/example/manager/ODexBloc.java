@@ -50,7 +50,7 @@ public class ODexBloc {
              * 1）dex、jar、apk文件的路径
              *
              * optimizedDirectory：
-             * 1）dex文件首次加载时，会进行dexopt操作
+             * 1）dex文件首次加载时，会进行 dexopt 操作
              * 2）optimizedDirectory即为优化后的odex文件的存放目录，不允许为空
              * 3）官方推荐使用应用私有目录来缓存优化后的dex文件
              *
@@ -78,6 +78,7 @@ public class ODexBloc {
 
         Log.i(TAG, "ODexBloc, oDexPlugin, " + "odex优化 --end--");
     }
+
 }
 
 

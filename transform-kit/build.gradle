@@ -1,0 +1,16 @@
+apply plugin: 'kotlin'
+
+group 'com.tencent.shadow.core'
+
+
+dependencies {
+    /**
+     * Java动态代理机制详解（JDK 和CGLIB，Javassist，ASM）
+     * https://blog.csdn.net/luanlouis/article/details/24589193
+     * */
+    implementation 'org.javassist:javassist:3.28.0-GA'
+
+    implementation "com.android.tools.build:gradle:$build_gradle_version"
+
+    implementation gradleApi()
+}

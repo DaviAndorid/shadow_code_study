@@ -41,6 +41,7 @@ public class DynamicRuntime {
     public static boolean loadRuntime(InstalledApk installedRuntimeApk) {
         //宿主的 ClassLoader
         ClassLoader contextClassLoader = DynamicRuntime.class.getClassLoader();
+
         //ClassLoader 的继承关系被改过，具体见： hackParentToRuntime(installedRuntimeApk, contextClassLoader);
         RuntimeClassLoader runtimeClassLoader = getRuntimeClassLoader();
         if (runtimeClassLoader != null) {
@@ -149,9 +150,8 @@ public class DynamicRuntime {
          * 2）contextClassLoader 的父loader 设置为 RuntimeClassLoader
          * 最后关系变为了：
          *  - BootClassLoader（Android 系统启动时会使用 BootClassLoader 来预加载常用类）
-         *   - RuntimeClassLoader
+         *   - RuntimeClassLoader 加载插件的loader
          *     - PathClassLoader（加载系统类和应用程序的类）
-         *
          *
          * 这样子改，基于双亲委托机制
          *  - BootClassLoader先加载

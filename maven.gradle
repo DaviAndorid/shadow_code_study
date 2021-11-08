@@ -1,0 +1,101 @@
+apply plugin: 'maven-publish'
+
+def coreGroupId = 'com.tencent.shadow.core'
+def publicationVersion = '2.0.0'
+
+/**
+ * 通过 《publishing》任务，把gradle插件的源码拷贝到指定目录中
+ * */
+def sourceJar(String name, String path) {
+    return tasks.create("source${name.capitalize()}Jar", Jar) {
+        group = "publishing"
+        description = "package ${name} source to jar"
+        from "$path/src/main/java"
+        from "$path/src/main/kotlin"
+        from "$path/src/main/groovy"
+        destinationDir = file("$path/build/libs/")
+        classifier = 'sources'
+    }
+}
+
+static def getDependencyNode(scope, groupId, artifactId, version) {
+    Node node = new Node(null, 'dependency')
+    node.appendNode('groupId', groupId)
+    node.appendNode('artifactId', artifactId)
+    node.appendNode('version', version)
+    node.appendNode('scope', scope)
+    return node
+}
+
+/**
+ * 基于《maven-publish》方式的上传java工程的jar:
+ * https://github.com/zgxzgxzg/DaviGradlePlu/blob/main/daviGradle/DaviPublish.gradle
+ * */
+publishing {
+    /**
+     * 要发布的内容
+     * */
+    publications {
+        gradlePlugin(MavenPublication) {
+            groupId coreGroupId
+            artifactId 'gradle-plugin'
+            version publicationVersion
+            //artifact("gradle-plugin/build/libs/gradle-plugin.jar")
+            //1）通过 《publishing》任务，把gradle插件的源码拷贝到指定目录中
+            artifact sourceJar("task_name_gradlePlugin", "./gradle-plugin3")
+            /**
+             * 教程：https://www.codenong.com/24743562/
+             * */
+            pom.withXml {
+                def root = asNode()
+                def dependencies = root.appendNode('dependencies')
+                dependencies.append(getDependencyNode('compile', 'org.jetbrains.kotlin', 'kotlin-stdlib-jdk7', kotlin_version))
+                //dependencies.append(getDependencyNode('compile', 'com.android.tools.build', 'gradle', build_gradle_version))
+                //dependencies.append(getDependencyNode('compile', coreGroupId, 'transform-kit', publicationVersion))
+                //dependencies.append(getDependencyNode('compile', coreGroupId, 'transform', publicationVersion))
+                //dependencies.append(getDependencyNode('compile', coreGroupId, 'runtime', publicationVersion))
+                //dependencies.append(getDependencyNode('compile', coreGroupId, 'activity-container', publicationVersion))
+            }
+        }
+
+        /*
+        transformKit(MavenPublication) {
+            groupId coreGroupId
+            artifactId 'transform-kit'
+            version publicationVersion
+            //artifact("$corePath/transform-kit/build/libs/transform-kit.jar")
+            artifact sourceJar("task_name_transformKit", "./transform-kit")
+
+            pom.withXml {
+                def root = asNode()
+                def dependencies = root.appendNode('dependencies')
+                dependencies.append(getDependencyNode('compile', 'org.jetbrains.kotlin', 'kotlin-stdlib-jdk7', kotlin_version))
+                dependencies.append(getDependencyNode('compile', 'com.android.tools.build', 'gradle', build_gradle_version))
+                dependencies.append(getDependencyNode('compile', 'org.javassist', 'javassist', '3.28.0-GA'))
+            }
+        }
+
+        transform(MavenPublication) {
+            groupId coreGroupId
+            artifactId 'transform'
+            version publicationVersion
+            //artifact("$corePath/transform/build/libs/transform.jar")
+            artifact sourceJar("task_name_transform", "./transform")
+
+            pom.withXml {
+                def root = asNode()
+                def dependencies = root.appendNode('dependencies')
+                dependencies.append(getDependencyNode('compile', coreGroupId, 'transform-kit', publicationVersion))
+            }
+        }*/
+    }
+
+    /**
+     * 要发布的地点
+     * */
+    repositories {
+        maven {
+            url "./repo-publications2"
+        }
+    }
+}

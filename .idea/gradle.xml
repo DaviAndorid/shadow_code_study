@@ -4,7 +4,7 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="testRunner" value="GRADLE" />
+        <option name="testRunner" value="PLATFORM" />
         <option name="distributionType" value="DEFAULT_WRAPPED" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
@@ -15,8 +15,12 @@
             <option value="$PROJECT_DIR$/dynamic-host" />
             <option value="$PROJECT_DIR$/dynamic-loader" />
             <option value="$PROJECT_DIR$/dynamic-manager" />
+            <option value="$PROJECT_DIR$/gradle-plugin" />
             <option value="$PROJECT_DIR$/manager" />
             <option value="$PROJECT_DIR$/sample-manager" />
+            <option value="$PROJECT_DIR$/sample-plugin-app" />
+            <option value="$PROJECT_DIR$/transform" />
+            <option value="$PROJECT_DIR$/transform-kit" />
             <option value="$PROJECT_DIR$/utils" />
           </set>
         </option>

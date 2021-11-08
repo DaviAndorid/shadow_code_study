@@ -28,9 +28,15 @@ public abstract class BasePluginManager {
      */
     protected Handler mUiHandler = new Handler(Looper.getMainLooper());
 
+    /**
+     * 从压缩包中将插件解压出来，解析成InstalledPlugin
+     */
+    private UnpackManager mUnpackManager;
+
 
     public BasePluginManager(Context context) {
         this.mHostContext = context.getApplicationContext();
+        this.mUnpackManager = new UnpackManager(mHostContext.getFilesDir(), getName());
         this.mInstalledDao = new InstalledDao(new InstalledPluginDBHelper(mHostContext, getName()));
     }
 
@@ -49,11 +55,6 @@ public abstract class BasePluginManager {
     public final PluginConfig installPluginFromDir(File dir) {
         throw new UnsupportedOperationException("TODO");
     }
-
-    /**
-     * 从压缩包中将插件解压出来，解析成InstalledPlugin
-     */
-    private UnpackManager mUnpackManager;
 
     /**
      * 从压缩包中解压插件

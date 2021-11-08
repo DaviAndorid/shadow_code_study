@@ -107,9 +107,10 @@ public class SamplePluginManager extends FastPluginManager {
 
                 //3）加载框架插件（如：loader/runtime）和业务插件，同时启动插件activity
                 startPluginActivity(installedPlugin, partKey, pluginIntent);
+                Log.i(TAG, "SamplePluginManager, ok... ");
             } catch (Exception e) {
                 e.printStackTrace();
-                Log.e(TAG, "SamplePluginManager, 插件启动，这个环节先不展开，下个阶段展开");
+                Log.e(TAG, "SamplePluginManager, err：" + e.getMessage());
             }
         });
 

@@ -7,3 +7,7 @@ include ':app'
 rootProject.name = "DemoHot"
 include ':utils'
 include ':dynamic-loader'
+include ':sample-plugin-app'
+include ':gradle-plugin'
+include ':transform-kit'
+include ':transform'

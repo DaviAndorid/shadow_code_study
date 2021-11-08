@@ -1,0 +1,117 @@
+/**
+ * 1）定义 buildscript
+ * */
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        // 因为使用的 Kotlin 需要需要添加 Kotlin 插件
+        //classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.20"
+    }
+}
+
+/**
+ * 2）引入要用的插件
+ * */
+// 用来生成plugin的插件，gradlePlugin 方法
+apply plugin: 'java-gradle-plugin'
+apply plugin: 'kotlin'
+
+group 'com.tencent.shadow.core'
+
+/**
+ * 3）repositories
+ * */
+repositories {
+    // 需要添加 jcenter 否则会提示找不到 gradlePlugin
+    jcenter()
+    google()
+}
+
+/**
+ * 4）依赖
+ * */
+dependencies {
+    //implementation project(':transform')
+    //implementation project(':transform-kit')
+    implementation "com.android.tools.build:gradle:$build_gradle_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+/**
+ * 5）编译环境配置
+ * */
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+
+/**
+ * 6）插件定义
+ * Configuration options for the JavaGradlePluginPlugin.
+ * gradle 官方API：
+ * https://docs.gradle.org/current/javadoc/org/gradle/plugin/devel/GradlePluginDevelopmentExtension.html
+ * */
+gradlePlugin {
+    plugins {
+        shadow {
+            /**
+             * 新老版本区别（优化编译速度）：
+             * https://juejin.cn/post/6844904176250519565
+             *
+             * 《Composing builds》
+             * demo1：https://gitee.com/crwth/composing-builds-demo
+             * demo2：https://toscode.gitee.com/zhangshitou/ComposingBuilds-vs-buildSrc
+             * */
+            id = "com.tencent.shadow.plugin"
+            implementationClass = "com.tencent.shadow.core.gradle.ShadowPlugin"
+        }
+    }
+}
+
+
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'maven'
+//发布到maven仓库，这里我们发布到本地仓库，../代表当前目录的父目录
+def coreGroupId = 'com.tencent.shadow.core'
+def publicationVersion = 'gradle-plugin-local'
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            //设置插件的GAV参数
+            pom.groupId = coreGroupId
+            pom.artifactId = publicationVersion
+            pom.version = '1.0.0'//版本号
+            //文件发布到下面目录
+            repository(url: uri('../repo'))
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

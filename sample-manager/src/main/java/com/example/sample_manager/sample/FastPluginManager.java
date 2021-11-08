@@ -114,7 +114,7 @@ public abstract class FastPluginManager extends PluginManagerThatUseDynamicLoade
         final String uuid = pluginConfig.UUID;
         List<Future> futures = new LinkedList<>();
 
-        //2）插件runTime/pluginLoader 的 odex 优化
+        //2）框架插件runTime/pluginLoader 的 odex 优化
         if (pluginConfig.runTime != null && pluginConfig.pluginLoader != null) {
             //runTime
             Future odexRuntime = mFixedPool.submit((Callable) () -> {
@@ -182,7 +182,6 @@ public abstract class FastPluginManager extends PluginManagerThatUseDynamicLoade
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
         //2）启动
-
         mPluginLoader.startActivityInPluginProcess(intent);
     }
 
