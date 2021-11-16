@@ -1,0 +1,81 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.tencent.shadow.core",
+    "module": "gradle-plugin",
+    "version": "unspecified",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "6.1.1",
+      "buildId": "5za77sdkarghrpl7wr2jfji3gi"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.localToProject": "public",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "gradle-plugin-unspecified.jar",
+          "url": "gradle-plugin-unspecified.jar",
+          "size": 4067,
+          "sha512": "95c05d69036e33f4673f1ac220bdd33b27e3d4b84bc13c3b775bc61b7bcd5c90fa3ecfbc58265d5658e3730ddd96528e11a605f459ae2a378537da39dab7ca19",
+          "sha256": "6f876e89e5db57389b1ba5c824e619c4c4014e2ff416d072cc66e9c348e01967",
+          "sha1": "bc435d5bbab60ea108e3b2dc1ae29c406505e798",
+          "md5": "4bd3993e6c4c4e10d065d2ac8814a1da"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.localToProject": "public",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "com.android.tools.build",
+          "module": "gradle",
+          "version": {
+            "requires": "4.0.2"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk7",
+          "version": {
+            "requires": "1.4.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "gradle-plugin-unspecified.jar",
+          "url": "gradle-plugin-unspecified.jar",
+          "size": 4067,
+          "sha512": "95c05d69036e33f4673f1ac220bdd33b27e3d4b84bc13c3b775bc61b7bcd5c90fa3ecfbc58265d5658e3730ddd96528e11a605f459ae2a378537da39dab7ca19",
+          "sha256": "6f876e89e5db57389b1ba5c824e619c4c4014e2ff416d072cc66e9c348e01967",
+          "sha1": "bc435d5bbab60ea108e3b2dc1ae29c406505e798",
+          "md5": "4bd3993e6c4c4e10d065d2ac8814a1da"
+        }
+      ]
+    }
+  ]
+}
