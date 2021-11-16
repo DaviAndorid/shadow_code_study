@@ -1,6 +1,5 @@
 plugins {
     id 'com.android.application'
-    //id 'com.tencent.shadow.plugin' version '1.0.2'
 }
 
 android {
@@ -32,7 +31,34 @@ android {
 /**
  * 自定义gradle插件
  * */
-//apply plugin: 'com.tencent.shadow.plugin'
+apply plugin: 'com.tencent.shadow.plugin'
+shadow {
+    packagePlugin {
+
+        pluginTypes {
+            debug {
+                pluginApks {
+                    pluginApk1 {
+                        businessName = 'sample-manager'
+                        partKey = 'sample-manager'
+                        buildTask = ':sample-manager:assembleDebug'
+                        apkName = 'sample-manager-debug.apk'
+                        apkPath = 'sample-manager/build/outputs/apk/debug/sample-manager-debug.apk'
+                    }
+                }
+            }
+        }
+
+        archiveSuffix = System.getenv("PluginSuffix") ?: ""
+        archivePrefix = 'plugin'
+        //目标生产目录
+        destinationDir = "${getRootProject().getBuildDir()}"
+
+        version = 4
+        compactVersion = [1, 2, 3]
+        uuidNickName = "1.1.5"
+    }
+}
 
 dependencies {
 }

@@ -19,8 +19,6 @@
             <option value="$PROJECT_DIR$/manager" />
             <option value="$PROJECT_DIR$/sample-manager" />
             <option value="$PROJECT_DIR$/sample-plugin-app" />
-            <option value="$PROJECT_DIR$/transform" />
-            <option value="$PROJECT_DIR$/transform-kit" />
             <option value="$PROJECT_DIR$/utils" />
           </set>
         </option>

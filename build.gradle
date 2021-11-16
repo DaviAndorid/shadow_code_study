@@ -13,14 +13,10 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:$build_gradle_version"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.tencent.shadow.core:gradle-plugin-local:1.0.0'
+        classpath 'com.tencent.shadow.core:gradle-plugin-local:1.1.1'
     }
 }
 
-
-apply plugin: 'com.tencent.shadow.plugin'
-
-apply from: "./maven.gradle"
 
 allprojects {
     repositories {

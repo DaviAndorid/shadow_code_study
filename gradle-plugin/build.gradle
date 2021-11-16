@@ -33,10 +33,20 @@ repositories {
  * 4）依赖
  * */
 dependencies {
+    /**
+     * todo 因为pom的原因，不采用官方模式，具体原因如下：
+     * 1）todo 上传maven的时候，依赖失败了，但是gradle/kotlin-stdlib-jdk7等却不会？
+     * */
     //implementation project(':transform')
     //implementation project(':transform-kit')
     implementation "com.android.tools.build:gradle:$build_gradle_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    /**
+     * 1）Javassist是一个Java字节码类库
+     * 2）Java的字节码是包含Java类与接口，并按照一定的顺序存在class文件中。
+     * */
+    implementation 'org.javassist:javassist:3.28.0-GA'
 }
 
 /**
@@ -81,6 +91,31 @@ repositories {
     mavenCentral()
 }
 
+
+
+/**
+ * todo Plugin with id 'com.tencent.shadow.plugin' not found.
+ * */
+/*
+apply plugin: 'maven-publish'
+def coreGroupId = 'com.tencent.shadow.core'
+def publicationVersion = 'gradle-plugin-local'
+publishing {
+    publications {
+        gradlePlugin(MavenPublication) {
+            groupId coreGroupId
+            artifactId publicationVersion
+            version '1.0.3'//版本号
+        }
+    }
+    repositories {
+        maven {
+            url "../repo2"
+        }
+    }
+}*/
+
+
 apply plugin: 'maven'
 //发布到maven仓库，这里我们发布到本地仓库，../代表当前目录的父目录
 def coreGroupId = 'com.tencent.shadow.core'
@@ -88,12 +123,13 @@ def publicationVersion = 'gradle-plugin-local'
 uploadArchives {
     repositories {
         mavenDeployer {
+            //文件发布到下面目录
+            repository(url: uri('../repo'))
+
             //设置插件的GAV参数
             pom.groupId = coreGroupId
             pom.artifactId = publicationVersion
-            pom.version = '1.0.0'//版本号
-            //文件发布到下面目录
-            repository(url: uri('../repo'))
+            pom.version = '1.1.1'//版本号
         }
     }
 }
