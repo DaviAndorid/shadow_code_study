@@ -1,5 +1,3 @@
-# shadow_pluginmanager
-
 内容：安卓热修shadow框架源码解析
 
 博客：
