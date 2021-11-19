@@ -62,10 +62,12 @@ dependencies {
 
 //把 制定模块的apk（如：sample-manager ）拷贝到 本工程的 build/generated/assets/xx/
 def createCopyTask(projectName, buildType, name, apkName, inputFile, taskName) {
-    println "daviAndroid createCopyTask"
+    println "daviAndroid createCopyTask start"
 
     def outputFile = file("${getBuildDir()}/generated/assets/${name}/${buildType}/${apkName}")
     outputFile.getParentFile().mkdirs()
+
+    println "create task dependsOn " + "${projectName}:${taskName}"
 
     return tasks.create("copy${buildType.capitalize()}${name.capitalize()}Task", Copy) {
         group = 'build'
@@ -98,7 +100,16 @@ def generateAssets(generateAssetsTask, buildType) {
             "assemble${buildType.capitalize()}"
     )
 
-    //todo zip包的准备
+    //zip包的准备
+    def pluginZip = file("${getRootProject().getBuildDir()}/plugin-${buildType}.zip")
+    generateAssetsTask.dependsOn createCopyTask(
+            ':sample-plugin-app',
+            buildType,
+            'plugin-zip',
+            "plugin-${buildType}.zip",
+            pluginZip,
+            "package${buildType.capitalize()}Plugin"
+    )
 }
 
 /**
@@ -123,7 +134,9 @@ tasks.whenTaskAdded { task ->
         generateAssets(task, 'debug')
     }
     if (task.name == "generateReleaseAssets") {
-        generateAssets(task, 'release')
+        //todo 目前sample-plugin-app 中只配置了 debug 的zip生成
+        //todo 所以暂时线注释
+        //generateAssets(task, 'release')
     }
 }
 

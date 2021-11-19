@@ -10,7 +10,9 @@ open class PluginBuildType {
     var name = ""
 
     var loaderApkConfig: Tuple2<String, String> = Tuple2("", "")
+
     var runtimeApkConfig: Tuple2<String, String> = Tuple2("", "")
+
     lateinit var pluginApks: NamedDomainObjectContainer<PluginApkConfig>
 
     constructor(name: String) {

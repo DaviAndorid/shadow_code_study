@@ -12,7 +12,7 @@ import java.io.FileWriter
 internal fun createPackagePluginTask(project: Project, buildType: PluginBuildType): Task {
 
     /**
-     * 目录
+     * json 目录
      * */
     val targetConfigFile = File(project.projectDir.absolutePath + "/generatePluginConfig/${buildType.name}/config.json")
 
@@ -108,7 +108,6 @@ private fun createGenerateConfigTask(project: Project, buildType: PluginBuildTyp
         //println("runtime task = $runtimeTask")
     }
 
-
     //loader apk build task
     val loaderApkName = buildType.loaderApkConfig.first
     var loaderTask = ""
@@ -152,6 +151,8 @@ private fun createGenerateConfigTask(project: Project, buildType: PluginBuildTyp
 
                 System.err.println("generateConfig task done")
             }
+
+
     if (loaderTask.isNotEmpty()) {
         task.dependsOn(loaderTask)
     }
